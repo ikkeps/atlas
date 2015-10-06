@@ -4,11 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"image"
-	//"image/draw"
+	"image/draw"
 	_ "image/gif"
 	_ "image/jpeg"
-	_ "image/png"
+	"image/png"
 	"os"
+	"path"
 	"path/filepath"
 )
 
@@ -106,7 +107,48 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	fit, w, h := params.Packer(res.Files, params.MaxWidth, params.MaxHeight)
 	res.Files = fit
 
+	im := image.NewRGBA(image.Rect(0, 0, w, h))
+	for _, file := range res.Files {
+		// Open the given file
+		r, err := os.Open(file.FileName)
+		if err != nil {
+			return nil, err
+		}
+
+		cim, _, err := image.Decode(r)
+		if err != nil && err != image.ErrFormat {
+			fmt.Printf("Failed to open file")
+			return nil, err
+		}
+
+		if err != image.ErrFormat {
+			dp := image.Pt(file.X, file.Y)
+			draw.Draw(im, image.Rectangle{dp, dp.Add(cim.Bounds().Size())}, cim, cim.Bounds().Min, draw.Src)
+		} else {
+			fmt.Printf("Incorrect format for file: %s\n", file.FileName)
+		}
+
+	}
+
+	err = createImage(outputDir, "atlas", im)
+	if err != nil {
+		return nil, err
+	}
+
 	fmt.Printf("%s\n", fit)
 	fmt.Printf("%d,%d\n", w, h)
 	return res, nil
+}
+
+func createImage(outDir string, name string, im image.Image) error {
+	out, err := os.Create(path.Join(outDir, fmt.Sprintf("%s.png", name)))
+	if err != nil {
+		return err
+	}
+
+	err = png.Encode(out, im)
+	if err != nil {
+		return err
+	}
+	return nil
 }

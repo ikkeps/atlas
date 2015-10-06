@@ -55,7 +55,7 @@ func PackGrowing(files []*File, maxWidth int, maxHeight int) (fit []*File, width
 			}
 		}
 	}
-	return fit, 0, 0
+	return fit, root.w, root.h
 }
 
 func place(file *File, n *node) {
