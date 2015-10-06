@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"os"
 	"path"
+	"text/template"
 )
 
 // Represents a single atlas to be outputted
@@ -16,6 +17,16 @@ type Atlas struct {
 	Name          string
 	Files         []*File
 	Width, Height int
+}
+
+// Writes the atlas to the given output directory, this is shorthand
+// for calling both WriteImage and WriteDescriptor
+func (a *Atlas) Write(outputDir string) error {
+	if err := a.WriteImage(outputDir); err == nil {
+		return a.WriteDescriptor(outputDir)
+	} else {
+		return err
+	}
 }
 
 // Writes the image for this atlas to the given output directory
@@ -48,4 +59,19 @@ func (a *Atlas) WriteImage(outputDir string) error {
 		return err
 	}
 	return nil
+}
+
+// Writes the descriptor file for this atlas to the given output directory
+// Returns an error if any IO operation fails
+func (a *Atlas) WriteDescriptor(outputDir string) error {
+	t := template.New("kiwi.template")
+	t, err := t.ParseFiles("templates/kiwi.template")
+	if err != nil {
+		return err
+	}
+	out, err := os.Create(path.Join(outputDir, fmt.Sprintf("%s.json", a.Name)))
+	if err != nil {
+		return err
+	}
+	return t.Execute(out, a)
 }

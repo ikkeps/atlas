@@ -129,7 +129,7 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 		Height: h,
 		Files:  fit,
 	}
-	err = atlas.WriteImage(outputDir)
+	err = atlas.Write(outputDir)
 	if err != nil {
 		return nil, err
 	}
