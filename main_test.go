@@ -33,6 +33,7 @@ func TestGenerate(t *testing.T) {
 		{TestParams{
 			Files: BUTTONS,
 			Params: &GenerateParams{
+				Name:      "test-maxsize",
 				MaxWidth:  124,
 				MaxHeight: 50,
 			},

@@ -48,6 +48,7 @@ func main() {
 
 // Includes parameters that can be passed to the Generate function
 type GenerateParams struct {
+	Name       string
 	MaxWidth   int
 	MaxHeight  int
 	MaxAtlases int
@@ -69,6 +70,9 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	// Apply any default parameters
 	if params == nil {
 		params = &GenerateParams{}
+	}
+	if params.Name == "" {
+		params.Name = "atlas"
 	}
 	if params.Packer == nil {
 		params.Packer = PackGrowing
@@ -130,7 +134,7 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 
 	}
 
-	err = createImage(outputDir, "atlas", im)
+	err = createImage(outputDir, params.Name, im)
 	if err != nil {
 		return nil, err
 	}
