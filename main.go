@@ -21,9 +21,13 @@ func showHelp() {
 
 // Handles command line usage
 func main() {
-	var width, height int
-	flag.IntVar(&width, "width", 2048, "maximum width of the output image(s)")
-	flag.IntVar(&height, "height", 2048, "maximum height of the output image(s)")
+	var name, algorithm string
+	var maxWidth, maxHeight, maxAtlases int
+	flag.StringVar(&name, "name", "atlas", "the base name of the outputted atlas(s)")
+	flag.StringVar(&algorithm, "packing", "growing", "the algorthim to use when packing the input files")
+	flag.IntVar(&maxWidth, "width", 0, "maximum width of the output image(s)")
+	flag.IntVar(&maxHeight, "height", 0, "maximum height of the output image(s)")
+	flag.IntVar(&maxAtlases, "maxatlases", 0, "used to limit the number of atlases that can be generated")
 	flag.Parse()
 
 	args := flag.Args()
@@ -38,8 +42,21 @@ func main() {
 		os.Exit(2)
 	}
 
+	packer := GetPackerForAlgorithm(algorithm)
+	if packer == nil {
+		fmt.Fprintf(os.Stderr, "Unrecognized packing algorithm: %s\n", algorithm)
+		os.Exit(2)
+	}
+
 	outDir := args[1]
-	_, err = Generate(inFiles, outDir, nil)
+	params := &GenerateParams{
+		Name:       name,
+		MaxWidth:   maxWidth,
+		MaxHeight:  maxHeight,
+		MaxAtlases: maxAtlases,
+		Packer:     packer,
+	}
+	_, err = Generate(inFiles, outDir, params)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Texture packing failed with error: %s\n", err.Error())
 		os.Exit(2)
