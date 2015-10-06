@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 type node struct {
 	x, y, w, h  int
 	right, down *node
@@ -41,7 +39,6 @@ func PackGrowing(files []*File, maxWidth int, maxHeight int) {
 }
 
 func (n *node) find(file *File) *node {
-	fmt.Println("Find node", n, file)
 	if n.right != nil || n.down != nil {
 		if res := n.right.find(file); res != nil {
 			return res
@@ -56,7 +53,6 @@ func (n *node) find(file *File) *node {
 }
 
 func (n *node) split(file *File) *node {
-	fmt.Println("Split node", n, file)
 	file.X = n.x
 	file.Y = n.y
 	n.right = &node{
@@ -75,7 +71,6 @@ func (n *node) split(file *File) *node {
 }
 
 func (n *node) grow(file *File, maxWidth int, maxHeight int) *node {
-	fmt.Println("Grow node", n, file)
 	canGrowRight := file.Height <= n.h && n.w+file.Width < maxWidth
 	canGrowDown := file.Width <= n.w && n.h+file.Height < maxHeight
 	shouldGrowRight := canGrowRight && n.h >= n.w+file.Width
@@ -95,7 +90,6 @@ func (n *node) grow(file *File, maxWidth int, maxHeight int) *node {
 }
 
 func (n *node) growRight(file *File) *node {
-	fmt.Println("Grow right", n, file)
 	prev := n.clone()
 	n.x, n.y = 0, 0
 	n.w = prev.w + file.Width
@@ -114,7 +108,6 @@ func (n *node) growRight(file *File) *node {
 }
 
 func (n *node) growDown(file *File) *node {
-	fmt.Println("Grow down", n, file)
 	prev := n.clone()
 	n.x, n.y = 0, 0
 	n.h = prev.h + file.Height
