@@ -55,7 +55,7 @@ type GenerateParams struct {
 
 // Includes details of the result of a texture atlas Generate request
 type GenerateResult struct {
-	Files []File
+	Files []*File
 }
 
 // Generates a series of texture atlases using the given files as input
@@ -74,7 +74,7 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	}
 
 	res = &GenerateResult{}
-	res.Files = make([]File, len(files))
+	res.Files = make([]*File, len(files))
 
 	for i, filename := range files {
 		fmt.Printf("Found file: %s\n", filename)
@@ -93,7 +93,7 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 
 		if err != image.ErrFormat {
 			size := decoded.Bounds().Size()
-			res.Files[i] = File{
+			res.Files[i] = &File{
 				FileName: filename,
 				Width:    size.X,
 				Height:   size.Y,
@@ -103,5 +103,10 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 		}
 	}
 
+	fit, w, h := params.Packer(res.Files, params.MaxWidth, params.MaxHeight)
+	res.Files = fit
+
+	fmt.Printf("%s\n", fit)
+	fmt.Printf("%d,%d\n", w, h)
 	return res, nil
 }

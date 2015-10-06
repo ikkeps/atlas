@@ -1,5 +1,7 @@
 package main
 
+import "math"
+
 type node struct {
 	x, y, w, h  int
 	right, down *node
@@ -16,7 +18,13 @@ func (n *node) clone() *node {
 	}
 }
 
-func PackGrowing(files []*File, maxWidth int, maxHeight int) {
+func PackGrowing(files []*File, maxWidth int, maxHeight int) (fit []*File, width int, height int) {
+	if maxWidth == 0 {
+		maxWidth = math.MaxInt32
+	}
+	if maxHeight == 0 {
+		maxHeight = math.MaxInt32
+	}
 	w, h := 0, 0
 	if len(files) == 0 {
 		return
@@ -29,13 +37,30 @@ func PackGrowing(files []*File, maxWidth int, maxHeight int) {
 		w: w,
 		h: h,
 	}
+	fit = files[0:0]
 	for _, file := range files {
-		if node := root.find(file); node != nil {
-			_ = node.split(file)
+		if n := root.find(file); n != nil {
+			n = n.split(file)
+			place(file, n)
+			n := len(fit)
+			fit = fit[0 : n+1]
+			fit[n] = file
 		} else {
-			_ = root.grow(file, maxWidth, maxHeight)
+			n = root.grow(file, maxWidth, maxHeight)
+			if n != nil {
+				place(file, n)
+				n := len(fit)
+				fit = fit[0 : n+1]
+				fit[n] = file
+			}
 		}
 	}
+	return fit, 0, 0
+}
+
+func place(file *File, n *node) {
+	file.X = n.x
+	file.Y = n.y
 }
 
 func (n *node) find(file *File) *node {
@@ -53,8 +78,6 @@ func (n *node) find(file *File) *node {
 }
 
 func (n *node) split(file *File) *node {
-	file.X = n.x
-	file.Y = n.y
 	n.right = &node{
 		x: n.x + file.Width,
 		y: n.y,

@@ -30,6 +30,15 @@ func TestGenerate(t *testing.T) {
 		}, TestWant{
 			NumFiles: len(BUTTONS),
 		}},
+		{TestParams{
+			Files: BUTTONS,
+			Params: &GenerateParams{
+				MaxWidth:  124,
+				MaxHeight: 50,
+			},
+		}, TestWant{
+			NumFiles: 1,
+		}},
 	}
 	for _, c := range cases {
 		got, err := Generate(c.in.Files, OUTPUT_DIR, c.in.Params)
