@@ -47,7 +47,10 @@ func main() {
 
 // Includes parameters that can be passed to the Generate function
 type GenerateParams struct {
-	MaxWidth int
+	MaxWidth   int
+	MaxHeight  int
+	MaxAtlases int
+	Packer     Packer
 }
 
 // Includes details of the result of a texture atlas Generate request
@@ -62,12 +65,18 @@ type GenerateResult struct {
 func Generate(files []string, outputDir string, params *GenerateParams) (res *GenerateResult, err error) {
 	fmt.Printf("Files: %v\n", files)
 
-	res = &GenerateResult{}
+	// Apply any default parameters
+	if params == nil {
+		params = &GenerateParams{}
+	}
+	if params.Packer == nil {
+		params.Packer = PackGrowing
+	}
 
+	res = &GenerateResult{}
 	res.Files = make([]File, len(files))
 
-	i := 0
-	for _, filename := range files {
+	for i, filename := range files {
 		fmt.Printf("Found file: %s\n", filename)
 
 		// Open the given file
@@ -92,7 +101,6 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 		} else {
 			fmt.Printf("Incorrect format for file: %s\n", filename)
 		}
-		i += 1
 	}
 
 	return res, nil
