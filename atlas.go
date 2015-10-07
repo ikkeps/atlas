@@ -13,10 +13,11 @@ import (
 
 // Represents a single atlas to be outputted
 type Atlas struct {
-	Name          string
-	Files         []*File
-	Width, Height int
-	Descriptor    DescriptorFormat
+	Name                string
+	Files               []*File
+	Width, Height       int
+	MaxWidth, MaxHeight int
+	Descriptor          DescriptorFormat
 }
 
 // Writes the atlas to the given output directory, this is shorthand

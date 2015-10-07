@@ -18,16 +18,20 @@ func (n *node) clone() *node {
 	}
 }
 
-func PackGrowing(files []*File, maxWidth int, maxHeight int) (fit []*File, width int, height int) {
+func PackGrowing(atlas *Atlas, files []*File) (unfit []*File) {
+	maxWidth, maxHeight := atlas.MaxWidth, atlas.MaxHeight
 	if maxWidth == 0 {
 		maxWidth = math.MaxInt32
 	}
 	if maxHeight == 0 {
 		maxHeight = math.MaxInt32
 	}
+	atlas.Files = files[0:0]
+	unfit = files[0:0]
+
 	w, h := 0, 0
 	if len(files) == 0 {
-		return
+		return unfit
 	}
 	w = files[0].Width
 	h = files[0].Height
@@ -37,30 +41,27 @@ func PackGrowing(files []*File, maxWidth int, maxHeight int) (fit []*File, width
 		w: w,
 		h: h,
 	}
-	fit = files[0:0]
 	for _, file := range files {
 		if n := root.find(file); n != nil {
 			n = n.split(file)
-			place(file, n)
-			n := len(fit)
-			fit = fit[0 : n+1]
-			fit[n] = file
+			place(atlas, file, n)
 		} else {
 			n = root.grow(file, maxWidth, maxHeight)
 			if n != nil {
-				place(file, n)
-				n := len(fit)
-				fit = fit[0 : n+1]
-				fit[n] = file
+				place(atlas, file, n)
+			} else {
+				unfit = append(unfit, file)
 			}
 		}
 	}
-	return fit, root.w, root.h
+	atlas.Width, atlas.Height = root.w, root.h
+	return unfit
 }
 
-func place(file *File, n *node) {
+func place(atlas *Atlas, file *File, n *node) {
 	file.X = n.x
 	file.Y = n.y
+	atlas.Files = append(atlas.Files, file)
 }
 
 func (n *node) find(file *File) *node {

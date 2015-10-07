@@ -8,7 +8,7 @@ type TestParams struct {
 }
 
 type TestWant struct {
-	NumFiles int
+	NumFiles, NumAtlases int
 }
 
 func TestGenerate(t *testing.T) {
@@ -28,7 +28,8 @@ func TestGenerate(t *testing.T) {
 			Files:  BUTTONS,
 			Params: nil,
 		}, TestWant{
-			NumFiles: len(BUTTONS),
+			NumFiles:   len(BUTTONS),
+			NumAtlases: 1,
 		}},
 		{TestParams{
 			Files: BUTTONS,
@@ -38,7 +39,8 @@ func TestGenerate(t *testing.T) {
 				MaxHeight: 50,
 			},
 		}, TestWant{
-			NumFiles: 1,
+			NumFiles:   3,
+			NumAtlases: 3,
 		}},
 	}
 	for _, c := range cases {
@@ -48,6 +50,9 @@ func TestGenerate(t *testing.T) {
 		}
 		if len(got.Files) != c.want.NumFiles {
 			t.Errorf("Generate did not use all files: want %v files, got %v", c.want.NumFiles, got.Files)
+		}
+		if len(got.Atlases) != c.want.NumAtlases {
+			t.Errorf("Failed to generate enough atlases: want %v, got %v", c.want.NumAtlases, len(got.Atlases))
 		}
 	}
 }

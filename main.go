@@ -70,7 +70,8 @@ type GenerateParams struct {
 
 // Includes details of the result of a texture atlas Generate request
 type GenerateResult struct {
-	Files []*File
+	Files   []*File
+	Atlases []*Atlas
 }
 
 // Generates a series of texture atlases using the given files as input
@@ -119,19 +120,22 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 		}
 	}
 
-	fit, w, h := params.Packer(res.Files, params.MaxWidth, params.MaxHeight)
-	res.Files = fit
+	res.Atlases = make([]*Atlas, 0)
 
-	atlas := &Atlas{
-		Name:       params.Name,
-		Width:      w,
-		Height:     h,
-		Files:      fit,
-		Descriptor: DESC_KIWI,
-	}
-	err = atlas.Write(outputDir)
-	if err != nil {
-		return nil, err
+	pending := res.Files[:]
+	for i := 0; len(pending) > 0; i++ {
+		atlas := &Atlas{
+			Name:       fmt.Sprintf("%s-%d", params.Name, (i + 1)),
+			MaxWidth:   params.MaxWidth,
+			MaxHeight:  params.MaxHeight,
+			Descriptor: DESC_KIWI,
+		}
+		res.Atlases = append(res.Atlases, atlas)
+		pending = params.Packer(atlas, pending)
+		err = atlas.Write(outputDir)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return res, nil

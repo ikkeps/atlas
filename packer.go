@@ -7,7 +7,7 @@ const (
 
 // The packer type represents a packing alogrithm that can be used to
 // modify file positions, sorting them into a series of atlases
-type Packer func(files []*File, maxWidth int, maxHeight int) (fit []*File, width int, height int)
+type Packer func(atlas *Atlas, files []*File) (unfit []*File)
 
 // Returns the packer function for the given alorithm
 // Will return nil if the algorithm is not recognised
