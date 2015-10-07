@@ -119,8 +119,8 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 		if err != image.ErrFormat {
 			size := decoded.Bounds().Size()
 			if size.X > params.MaxWidth || size.Y > params.MaxHeight {
-				return nil, errors.New("File %s exceeds maximum size of atlas (%dx%d)",
-					filename, size.X, size.Y)
+				return nil, errors.New(fmt.Sprintf("File %s exceeds maximum size of atlas (%dx%d)",
+					filename, size.X, size.Y))
 			}
 
 			res.Files[i] = &File{
