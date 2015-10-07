@@ -65,6 +65,7 @@ type GenerateParams struct {
 	MaxHeight  int
 	MaxAtlases int
 	Packer     Packer
+	Descriptor DescriptorFormat
 }
 
 // Includes details of the result of a texture atlas Generate request
@@ -86,6 +87,9 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	}
 	if params.Packer == nil {
 		params.Packer = PackGrowing
+	}
+	if params.Descriptor == DESC_INVALID {
+		params.Descriptor = DESC_KIWI
 	}
 
 	res = &GenerateResult{}

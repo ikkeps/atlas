@@ -68,7 +68,8 @@ func (a *Atlas) WriteDescriptor(outputDir string) error {
 	if err != nil {
 		return err
 	}
-	out, err := os.Create(path.Join(outputDir, fmt.Sprintf("%s.json", a.Name)))
+	ext := GetFileExtForFormat(a.Descriptor)
+	out, err := os.Create(path.Join(outputDir, fmt.Sprintf("%s.%s", a.Name, ext)))
 	if err != nil {
 		return err
 	}
