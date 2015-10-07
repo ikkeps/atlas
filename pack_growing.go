@@ -1,7 +1,5 @@
 package main
 
-import "math"
-
 type node struct {
 	x, y, w, h  int
 	right, down *node
@@ -20,12 +18,6 @@ func (n *node) clone() *node {
 
 func PackGrowing(atlas *Atlas, files []*File) (unfit []*File) {
 	maxWidth, maxHeight := atlas.MaxWidth, atlas.MaxHeight
-	if maxWidth == 0 {
-		maxWidth = math.MaxInt32
-	}
-	if maxHeight == 0 {
-		maxHeight = math.MaxInt32
-	}
 	atlas.Files = files[0:0]
 	unfit = files[0:0]
 

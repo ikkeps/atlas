@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"image"
+	"math"
 	"os"
 	"path/filepath"
 )
@@ -92,6 +94,12 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	if params.Descriptor == DESC_INVALID {
 		params.Descriptor = DESC_KIWI
 	}
+	if params.MaxWidth == 0 {
+		params.MaxWidth = math.MaxInt32
+	}
+	if params.MaxHeight == 0 {
+		params.MaxHeight = math.MaxInt32
+	}
 
 	res = &GenerateResult{}
 	res.Files = make([]*File, len(files))
@@ -110,6 +118,11 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 
 		if err != image.ErrFormat {
 			size := decoded.Bounds().Size()
+			if size.X > params.MaxWidth || size.Y > params.MaxHeight {
+				return nil, errors.New("File %s exceeds maximum size of atlas (%dx%d)",
+					filename, size.X, size.Y)
+			}
+
 			res.Files[i] = &File{
 				FileName: filename,
 				Width:    size.X,
