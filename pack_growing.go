@@ -29,12 +29,17 @@ func PackGrowing(atlas *Atlas, files []*File) (unfit []*File) {
 	atlas.Files = files[0:0]
 	unfit = files[0:0]
 
-	w, h := 0, 0
+	w, h := maxWidth, maxHeight
 	if len(files) == 0 {
 		return unfit
 	}
-	w = files[0].Width
-	h = files[0].Height
+	firstFile := files[0]
+	if firstFile.Width < w {
+		w = firstFile.Width
+	}
+	if firstFile.Height < h {
+		h = firstFile.Height
+	}
 	root := &node{
 		x: 0,
 		y: 0,
