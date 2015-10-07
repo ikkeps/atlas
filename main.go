@@ -77,8 +77,6 @@ type GenerateResult struct {
 // Will generate an error if any IO operations fail or if the GenerateParams
 // represent an invalid configuration
 func Generate(files []string, outputDir string, params *GenerateParams) (res *GenerateResult, err error) {
-	fmt.Printf("Files: %v\n", files)
-
 	// Apply any default parameters
 	if params == nil {
 		params = &GenerateParams{}
@@ -94,8 +92,6 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	res.Files = make([]*File, len(files))
 
 	for i, filename := range files {
-		fmt.Printf("Found file: %s\n", filename)
-
 		// Open the given file
 		r, err := os.Open(filename)
 		if err != nil {
@@ -104,7 +100,6 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 
 		decoded, _, err := image.Decode(r)
 		if err != nil && err != image.ErrFormat {
-			fmt.Printf("Failed to open file")
 			return nil, err
 		}
 
@@ -124,17 +119,16 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	res.Files = fit
 
 	atlas := &Atlas{
-		Name:   params.Name,
-		Width:  w,
-		Height: h,
-		Files:  fit,
+		Name:       params.Name,
+		Width:      w,
+		Height:     h,
+		Files:      fit,
+		Descriptor: DESC_KIWI,
 	}
 	err = atlas.Write(outputDir)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Printf("%s\n", fit)
-	fmt.Printf("%d,%d\n", w, h)
 	return res, nil
 }

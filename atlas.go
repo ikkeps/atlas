@@ -9,7 +9,6 @@ import (
 	"image/png"
 	"os"
 	"path"
-	"text/template"
 )
 
 // Represents a single atlas to be outputted
@@ -17,6 +16,7 @@ type Atlas struct {
 	Name          string
 	Files         []*File
 	Width, Height int
+	Descriptor    DescriptorFormat
 }
 
 // Writes the atlas to the given output directory, this is shorthand
@@ -64,8 +64,7 @@ func (a *Atlas) WriteImage(outputDir string) error {
 // Writes the descriptor file for this atlas to the given output directory
 // Returns an error if any IO operation fails
 func (a *Atlas) WriteDescriptor(outputDir string) error {
-	t := template.New("kiwi.template")
-	t, err := t.ParseFiles("templates/kiwi.template")
+	t, err := GetTemplateForFormat(a.Descriptor)
 	if err != nil {
 		return err
 	}
