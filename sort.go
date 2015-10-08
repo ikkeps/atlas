@@ -39,6 +39,12 @@ func height(f1, f2 *File) int {
 	return f1.Height - f2.Height
 }
 
+// Compares the area of the two files and returns the difference
+func area(f1, f2 *File) int {
+	a1, a2 := f1.Width*f1.Height, f2.Width*f2.Height
+	return a1 - a2
+}
+
 // Compares the shorter dimensions of the two files and returns the difference
 func minSide(f1, f2 *File) int {
 	f1min, f2min := f1.Width, f2.Width
@@ -75,16 +81,61 @@ func multiSort(f1, f2 *File, methods ...sortFunc) int {
 	return 0
 }
 
-// Compares the two files using a combination of other sorts
-func maxSideMinSideHeightWidth(f1, f2 *File) int {
-	return multiSort(f1, f2, maxSide, minSide, height, width)
+// Sorts the files by width first then height
+func SortWidth(files []*File) (sorted []*File) {
+	s := fileSorter{
+		files: files,
+		by: func(f1, f2 *File) int {
+			return multiSort(f1, f2, width, height)
+		},
+	}
+	sort.Sort(s)
+	return s.files
+}
+
+// Sorts the files by height first then width
+func SortHeight(files []*File) (sorted []*File) {
+	s := fileSorter{
+		files: files,
+		by: func(f1, f2 *File) int {
+			return multiSort(f1, f2, height, width)
+		},
+	}
+	sort.Sort(s)
+	return s.files
+}
+
+// Sorts the files first by area then height
+func SortAreaWidth(files []*File) (sorted []*File) {
+	s := fileSorter{
+		files: files,
+		by: func(f1, f2 *File) int {
+			return multiSort(f1, f2, area, width)
+		},
+	}
+	sort.Sort(s)
+	return s.files
+}
+
+// Sorts the files first by area then height
+func SortAreaHeight(files []*File) (sorted []*File) {
+	s := fileSorter{
+		files: files,
+		by: func(f1, f2 *File) int {
+			return multiSort(f1, f2, area, height)
+		},
+	}
+	sort.Sort(s)
+	return s.files
 }
 
 // Sorts the files by the maximum size of their sides
 func SortMaxSide(files []*File) (sorted []*File) {
 	s := fileSorter{
 		files: files,
-		by:    maxSideMinSideHeightWidth,
+		by: func(f1, f2 *File) int {
+			return multiSort(f1, f2, maxSide, minSide, height, width)
+		},
 	}
 	sort.Sort(s)
 	return s.files
