@@ -34,9 +34,9 @@ You can pass params to the Generate function
 ```
 params := atlas.GenerateParams {
 	Name   	   : "atlas" // The base name of the outputted files
-	Descriptor : "kiwi" // The format of the data file for the atlases
-	Packer     : "growing" // The algorithm to use when packing
-	Sorter	   : "maxside" // The order to sort files by
+	Descriptor : atlas.DESC_KIWI // The format of the data file for the atlases
+	Packer     : atlas.PackGrowing // The algorithm to use when packing
+	Sorter	   : atlas.SortMaxSide // The order to sort files by
 	MaxWidth   : 2048 // Maximum width/height of the atlas images
 	MaxHeight  : 2048 
 	MaxAtlases : 0 // Indicates no maximum
