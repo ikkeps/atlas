@@ -21,6 +21,14 @@ type Atlas struct {
 	Descriptor          DescriptorFormat
 }
 
+// Adds a file into the atlas at the given position
+// Used by packers to add packed files to the atlas
+func (a *Atlas) AddFile(file *File, x, y int) {
+	file.Atlas = a
+	file.X, file.Y = x, y
+	a.Files = append(a.Files, file)
+}
+
 // Writes the atlas to the given output directory, this is shorthand
 // for calling both WriteImage and WriteDescriptor
 func (a *Atlas) Write(outputDir string) error {

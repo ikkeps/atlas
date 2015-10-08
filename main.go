@@ -158,7 +158,8 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 			Padding:    params.Padding,
 		}
 		res.Atlases = append(res.Atlases, atlas)
-		pending = params.Packer(atlas, pending)
+		params.Packer(atlas, pending)
+		pending = getRemainingFiles(pending)
 		fmt.Printf("Writing atlas named %s to %s\n", atlas.Name, outputDir)
 		err = atlas.Write(outputDir)
 		if err != nil {
@@ -167,4 +168,14 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	}
 
 	return res, nil
+}
+
+func getRemainingFiles(files []*File) (remaining []*File) {
+	remaining = make([]*File, 0)
+	for _, file := range files {
+		if file.Atlas == nil {
+			remaining = append(remaining, file)
+		}
+	}
+	return remaining
 }

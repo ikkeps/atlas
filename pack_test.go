@@ -88,9 +88,15 @@ func TestPackGrowing(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		unfit := PackGrowing(c.in.atlas, c.in.files)
-		if len(unfit) != c.want.numUnfit {
-			t.Errorf("Unexpected number of unfit file(s): want %d, got %d", c.want.numUnfit, len(unfit))
+		PackGrowing(c.in.atlas, c.in.files)
+		numUnfit := 0
+		for _, file := range c.in.files {
+			if file.Atlas == nil {
+				numUnfit += 1
+			}
+		}
+		if numUnfit != c.want.numUnfit {
+			t.Errorf("Unexpected number of unfit file(s): want %d, got %d", c.want.numUnfit, numUnfit)
 		}
 		if c.want.atlas != nil {
 			if c.in.atlas.Width != c.want.atlas.Width || c.in.atlas.Height != c.want.atlas.Height {
@@ -106,6 +112,9 @@ func TestPackGrowing(t *testing.T) {
 						expect.X, expect.Y, file.X, file.Y)
 				}
 			}
+		}
+		for _, file := range c.in.files {
+			file.Atlas = nil
 		}
 	}
 }

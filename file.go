@@ -2,7 +2,7 @@ package main
 
 // Represents a File to be outputted
 type File struct {
-	Atlas    Atlas
+	Atlas    *Atlas
 	FileName string
 	X        int
 	Y        int
