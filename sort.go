@@ -81,6 +81,9 @@ func multiSort(f1, f2 *File, methods ...sortFunc) int {
 	return 0
 }
 
+// A function that can be used to sort files
+type Sorter func(files []*File) (sorted []*File)
+
 // Sorts the files by width first then height
 func SortWidth(files []*File) (sorted []*File) {
 	s := fileSorter{
