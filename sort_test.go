@@ -29,10 +29,10 @@ func TestSortMaxSide(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		SortMaxSide(c.in)
+		res := SortMaxSide(c.in)
 		for i, file := range c.want {
-			if c.in[i] != file {
-				t.Errorf("File not sorted correctly: want %s, got %s", file.FileName, c.in[i].FileName)
+			if res[i] != file {
+				t.Errorf("File not sorted correctly: want %s, got %s", file.FileName, res[i].FileName)
 			}
 		}
 	}
