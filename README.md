@@ -3,6 +3,15 @@ Go Atlas
 
 Texture packer written in Go.
 
+### Features
+
+* Set maximum width/height of atlases for platform constraints
+* Generate as many atlases as you need with a single command
+* Add gutter to the images to prevent join lines between sprites (TODO)
+* Generate descriptor files in a range of formats (Currently only Kiwi.js supported)
+* Specify assets that must be grouped together to ensure maximum runtime performance (TODO)
+* Use as a command line tool or Go dependancy
+
 ### Example Usage
 
 Basic example
