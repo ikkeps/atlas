@@ -19,12 +19,14 @@ func showHelp() {
 func main() {
 	var name, algorithm, sorter string
 	var maxWidth, maxHeight, maxAtlases int
+	var padding int
 	flag.StringVar(&name, "name", "atlas", "the base name of the outputted atlas(s)")
 	flag.StringVar(&algorithm, "packing", "growing", "the algorthim to use when packing the input files")
 	flag.StringVar(&sorter, "sort", SORT_DEFAULT, "the sorting method to use when ordering the files")
 	flag.IntVar(&maxWidth, "width", 0, "maximum width of the output image(s)")
 	flag.IntVar(&maxHeight, "height", 0, "maximum height of the output image(s)")
 	flag.IntVar(&maxAtlases, "maxatlases", 0, "used to limit the number of atlases that can be generated")
+	flag.IntVar(&padding, "padding", 0, "the amount of empty space to insert between images")
 	flag.Parse()
 
 	args := flag.Args()
@@ -48,6 +50,7 @@ func main() {
 		MaxAtlases: maxAtlases,
 		Packer:     packer,
 		Sorter:     GetSorterFromString(sorter),
+		Padding:    padding,
 	}
 	_, err := Generate(inFiles, outDir, params)
 	if err != nil {
@@ -65,6 +68,7 @@ type GenerateParams struct {
 	Packer     Packer
 	Sorter     Sorter
 	Descriptor DescriptorFormat
+	Padding    int
 }
 
 // Includes details of the result of a texture atlas Generate request
@@ -118,15 +122,19 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 
 		if err != image.ErrFormat {
 			size := decoded.Bounds().Size()
-			if size.X > params.MaxWidth || size.Y > params.MaxHeight {
+			// Here we use padding*2 as if there is only one image it will still need
+			// padding on both sides left & right in the atlas
+			if size.X+params.Padding*2 > params.MaxWidth ||
+				size.Y+params.Padding*2 > params.MaxHeight {
 				return nil, errors.New(fmt.Sprintf("File %s exceeds maximum size of atlas (%dx%d)",
 					filename, size.X, size.Y))
 			}
-
+			// Here we only add padding to the width and height once because otherwise
+			// we will end up with double gaps between images
 			res.Files[i] = &File{
 				FileName: filename,
-				Width:    size.X,
-				Height:   size.Y,
+				Width:    size.X + params.Padding*2,
+				Height:   size.Y + params.Padding*2,
 			}
 		} else {
 			fmt.Printf("Incorrect format for file: %s\n", filename)
@@ -147,6 +155,7 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 			MaxWidth:   params.MaxWidth,
 			MaxHeight:  params.MaxHeight,
 			Descriptor: DESC_KIWI,
+			Padding:    params.Padding,
 		}
 		res.Atlases = append(res.Atlases, atlas)
 		pending = params.Packer(atlas, pending)

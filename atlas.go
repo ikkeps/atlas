@@ -17,6 +17,7 @@ type Atlas struct {
 	Files               []*File
 	Width, Height       int
 	MaxWidth, MaxHeight int
+	Padding             int
 	Descriptor          DescriptorFormat
 }
 
@@ -35,6 +36,13 @@ func (a *Atlas) Write(outputDir string) error {
 func (a *Atlas) WriteImage(outputDir string) error {
 	// Generate the image data
 	im := image.NewRGBA(image.Rect(0, 0, a.Width, a.Height))
+	// Set the background colour of the image
+	for i, n := 0, len(im.Pix); i < n; i += 4 {
+		im.Pix[i] = 0   // Red
+		im.Pix[i+1] = 0 // Green
+		im.Pix[i+2] = 0 // Blue
+		im.Pix[i+3] = 0 // Alpha
+	}
 	for _, file := range a.Files {
 		// Open the given file
 		r, err := os.Open(file.FileName)
@@ -46,7 +54,7 @@ func (a *Atlas) WriteImage(outputDir string) error {
 		if err != nil {
 			return err
 		}
-		dp := image.Pt(file.X, file.Y)
+		dp := image.Pt(file.X+atlas.Padding, file.Y+atlas.Padding)
 		draw.Draw(im, image.Rectangle{dp, dp.Add(cim.Bounds().Size())}, cim, cim.Bounds().Min, draw.Src)
 	}
 
