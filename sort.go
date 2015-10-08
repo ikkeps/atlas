@@ -81,8 +81,38 @@ func multiSort(f1, f2 *File, methods ...sortFunc) int {
 	return 0
 }
 
+// Available agorithms for sorting
+const (
+	SORT_DEFAULT     = "maxside"
+	SORT_WIDTH       = "width"
+	SORT_HEIGHT      = "height"
+	SORT_AREA        = "area"
+	SORT_AREA_WIDTH  = "areawidth"
+	SORT_AREA_HEIGHT = "areaheight"
+	SORT_MAX_SIDE    = "maxside"
+)
+
 // A function that can be used to sort files
 type Sorter func(files []*File) (sorted []*File)
+
+// Returns the sorter function for the given alorithm
+// Will return nil if the sorter is not recognised
+func GetSorterFromString(sorter string) Sorter {
+	switch sorter {
+	case SORT_WIDTH:
+		return SortWidth
+	case SORT_HEIGHT:
+		return SortHeight
+	case SORT_AREA_WIDTH:
+		return SortAreaWidth
+	case SORT_AREA:
+	case SORT_AREA_HEIGHT:
+		return SortAreaHeight
+	case SORT_MAX_SIDE:
+		return SortMaxSide
+	}
+	return nil
+}
 
 // Sorts the files by width first then height
 func SortWidth(files []*File) (sorted []*File) {

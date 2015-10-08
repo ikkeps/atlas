@@ -18,10 +18,11 @@ func showHelp() {
 
 // Handles command line usage
 func main() {
-	var name, algorithm string
+	var name, algorithm, sorter string
 	var maxWidth, maxHeight, maxAtlases int
 	flag.StringVar(&name, "name", "atlas", "the base name of the outputted atlas(s)")
 	flag.StringVar(&algorithm, "packing", "growing", "the algorthim to use when packing the input files")
+	flag.StringVar(&sorter, "sort", SORT_DEFAULT, "the sorting method to use when ordering the files")
 	flag.IntVar(&maxWidth, "width", 0, "maximum width of the output image(s)")
 	flag.IntVar(&maxHeight, "height", 0, "maximum height of the output image(s)")
 	flag.IntVar(&maxAtlases, "maxatlases", 0, "used to limit the number of atlases that can be generated")
@@ -52,6 +53,7 @@ func main() {
 		MaxHeight:  maxHeight,
 		MaxAtlases: maxAtlases,
 		Packer:     packer,
+		Sorter:     GetSorterFromString(sorter),
 	}
 	_, err = Generate(inFiles, outDir, params)
 	if err != nil {
@@ -67,6 +69,7 @@ type GenerateParams struct {
 	MaxHeight  int
 	MaxAtlases int
 	Packer     Packer
+	Sorter     Sorter
 	Descriptor DescriptorFormat
 }
 
@@ -99,6 +102,9 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	}
 	if params.MaxHeight == 0 {
 		params.MaxHeight = math.MaxInt32
+	}
+	if params.Sorter == nil {
+		params.Sorter = GetSorterFromString(SORT_DEFAULT)
 	}
 
 	res = &GenerateResult{}
@@ -135,7 +141,7 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 
 	res.Atlases = make([]*Atlas, 0)
 
-	pending := res.Files[:]
+	pending := params.Sorter(res.Files)
 	for i := 0; len(pending) > 0; i++ {
 		atlas := &Atlas{
 			Name:       fmt.Sprintf("%s-%d", params.Name, (i + 1)),
