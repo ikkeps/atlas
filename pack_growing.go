@@ -80,7 +80,7 @@ func (n *node) split(file *File) *node {
 		x: n.x + file.Width,
 		y: n.y,
 		w: n.w - file.Width,
-		h: n.h,
+		h: file.Height,
 	}
 	n.down = &node{
 		x: n.x,
