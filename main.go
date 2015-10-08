@@ -7,7 +7,6 @@ import (
 	"image"
 	"math"
 	"os"
-	"path/filepath"
 )
 
 // Shows the help info for command line usage
@@ -29,15 +28,11 @@ func main() {
 	flag.Parse()
 
 	args := flag.Args()
+	inFiles := args[:len(args)-1]
+	outDir := args[len(args)-1]
+
 	if len(args) < 2 {
 		showHelp()
-	}
-
-	inGlob := args[0]
-	inFiles, err := filepath.Glob(inGlob)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-		os.Exit(2)
 	}
 
 	packer := GetPackerForAlgorithm(algorithm)
@@ -46,7 +41,6 @@ func main() {
 		os.Exit(2)
 	}
 
-	outDir := args[1]
 	params := &GenerateParams{
 		Name:       name,
 		MaxWidth:   maxWidth,
@@ -55,7 +49,7 @@ func main() {
 		Packer:     packer,
 		Sorter:     GetSorterFromString(sorter),
 	}
-	_, err = Generate(inFiles, outDir, params)
+	_, err := Generate(inFiles, outDir, params)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Texture packing failed with error: %s\n", err.Error())
 		os.Exit(2)
@@ -139,6 +133,11 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 		}
 	}
 
+	if len(res.Files) == 0 {
+		fmt.Printf("No files to pack\n")
+		return res, nil
+	}
+
 	res.Atlases = make([]*Atlas, 0)
 
 	pending := params.Sorter(res.Files)
@@ -151,6 +150,7 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 		}
 		res.Atlases = append(res.Atlases, atlas)
 		pending = params.Packer(atlas, pending)
+		fmt.Printf("Writing atlas named %s to %s\n", atlas.Name, outputDir)
 		err = atlas.Write(outputDir)
 		if err != nil {
 			return nil, err
