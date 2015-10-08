@@ -17,7 +17,7 @@ type Atlas struct {
 	Files               []*File
 	Width, Height       int
 	MaxWidth, MaxHeight int
-	Padding             int
+	Padding, Gutter     int
 	Descriptor          DescriptorFormat
 }
 
@@ -62,7 +62,7 @@ func (a *Atlas) WriteImage(outputDir string) error {
 		if err != nil {
 			return err
 		}
-		dp := image.Pt(file.X+a.Padding, file.Y+a.Padding)
+		dp := image.Pt(file.X+a.Padding+a.Gutter, file.Y+a.Padding+a.Gutter)
 		draw.Draw(im, image.Rectangle{dp, dp.Add(cim.Bounds().Size())}, cim, cim.Bounds().Min, draw.Src)
 	}
 
