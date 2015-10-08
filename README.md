@@ -7,7 +7,7 @@ Texture packer written in Go.
 
 * Set maximum width/height of atlases for platform constraints
 * Generate as many atlases as you need with a single command
-* Add gutter to the images to prevent join lines between sprites (TODO)
+* Add gutter to the images to prevent join lines between sprites
 * Generate descriptor files in a range of formats (Currently only Kiwi.js supported)
 * Specify assets that must be grouped together to ensure maximum runtime performance (TODO)
 * Use as a command line tool or Go dependancy
@@ -34,11 +34,14 @@ You can pass params to the Generate function
 ```
 params := atlas.GenerateParams {
 	Name   	   : "atlas" // The base name of the outputted files
+	Descriptor : "kiwi" // The format of the data file for the atlases
+	Packer     : "growing" // The algorithm to use when packing
+	Sorter	   : "maxside" // The order to sort files by
 	MaxWidth   : 2048 // Maximum width/height of the atlas images
 	MaxHeight  : 2048 
 	MaxAtlases : 0 // Indicates no maximum
-	Packer     : "growing" // The algorithm to use when packing
-	Descriptor : "kiwi" // The format of the data file for the atlases
+	Padding    : 0 // The amount of blank space to add around each image
+	Gutter     : 0 // The amount to bleed the outer pixels of each image
 }
 res, err := atlas.Generate(inFiles, outputDir, &params)
 ```

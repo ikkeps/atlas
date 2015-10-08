@@ -45,12 +45,13 @@ func main() {
 	}
 
 	params := &GenerateParams{
-		Name:       name,
+		Name: name,
+		// Descriptor
+		Packer:     packer,
+		Sorter:     GetSorterFromString(sorter),
 		MaxWidth:   maxWidth,
 		MaxHeight:  maxHeight,
 		MaxAtlases: maxAtlases,
-		Packer:     packer,
-		Sorter:     GetSorterFromString(sorter),
 		Padding:    padding,
 		Gutter:     gutter,
 	}
@@ -64,11 +65,11 @@ func main() {
 // Includes parameters that can be passed to the Generate function
 type GenerateParams struct {
 	Name                string
-	MaxWidth, MaxHeight int
-	MaxAtlases          int
+	Descriptor          DescriptorFormat
 	Packer              Packer
 	Sorter              Sorter
-	Descriptor          DescriptorFormat
+	MaxWidth, MaxHeight int
+	MaxAtlases          int
 	Padding, Gutter     int
 }
 
@@ -90,20 +91,20 @@ func Generate(files []string, outputDir string, params *GenerateParams) (res *Ge
 	if params.Name == "" {
 		params.Name = "atlas"
 	}
+	if params.Descriptor == DESC_INVALID {
+		params.Descriptor = DESC_KIWI
+	}
 	if params.Packer == nil {
 		params.Packer = PackGrowing
 	}
-	if params.Descriptor == DESC_INVALID {
-		params.Descriptor = DESC_KIWI
+	if params.Sorter == nil {
+		params.Sorter = GetSorterFromString(SORT_DEFAULT)
 	}
 	if params.MaxWidth == 0 {
 		params.MaxWidth = math.MaxInt32
 	}
 	if params.MaxHeight == 0 {
 		params.MaxHeight = math.MaxInt32
-	}
-	if params.Sorter == nil {
-		params.Sorter = GetSorterFromString(SORT_DEFAULT)
 	}
 
 	res = &GenerateResult{}
