@@ -14,6 +14,12 @@ Texture packer written in Go.
 
 ### Example Usage
 
+Command line
+```
+# usage: %s [-params] <infiles> <outdir>
+go-atlas ./assets/*.png ./assets/spritesheets
+```
+
 Basic example
 ```
 inFiles := []string{
@@ -24,7 +30,7 @@ outputDir := "./assets/spritesheets"
 res, err := atlas.Generate(inFiles, outputDir, nil)
 ```
 
-You can pass params to the Generate function;
+You can pass params to the Generate function
 ```
 params := atlas.GenerateParams {
 	Name   	   : "atlas" // The base name of the outputted files
