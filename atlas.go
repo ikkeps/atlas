@@ -54,7 +54,7 @@ func (a *Atlas) WriteImage(outputDir string) error {
 		if err != nil {
 			return err
 		}
-		dp := image.Pt(file.X+atlas.Padding, file.Y+atlas.Padding)
+		dp := image.Pt(file.X+a.Padding, file.Y+a.Padding)
 		draw.Draw(im, image.Rectangle{dp, dp.Add(cim.Bounds().Size())}, cim, cim.Bounds().Min, draw.Src)
 	}
 
