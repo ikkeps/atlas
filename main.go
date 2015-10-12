@@ -2,65 +2,11 @@ package atlas
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"image"
 	"math"
 	"os"
 )
-
-// Shows the help info for command line usage
-func showHelp() {
-	fmt.Fprintf(os.Stderr, "usage: %s [-params] <infiles> <outdir>\n", os.Args[0])
-	os.Exit(2)
-}
-
-// Handles command line usage
-func main() {
-	var name, algorithm, sorter string
-	var maxWidth, maxHeight, maxAtlases int
-	var padding, gutter int
-	flag.StringVar(&name, "name", "atlas", "the base name of the outputted atlas(s)")
-	flag.StringVar(&algorithm, "packing", "growing", "the algorthim to use when packing the input files")
-	flag.StringVar(&sorter, "sort", SORT_DEFAULT, "the sorting method to use when ordering the files")
-	flag.IntVar(&maxWidth, "width", 0, "maximum width of the output image(s)")
-	flag.IntVar(&maxHeight, "height", 0, "maximum height of the output image(s)")
-	flag.IntVar(&maxAtlases, "maxatlases", 0, "used to limit the number of atlases that can be generated")
-	flag.IntVar(&padding, "padding", 0, "the amount of empty space to insert between images")
-	flag.IntVar(&gutter, "gutter", 0, "the amound to bleed images beyond their bounds")
-	flag.Parse()
-
-	args := flag.Args()
-	inFiles := args[:len(args)-1]
-	outDir := args[len(args)-1]
-
-	if len(args) < 2 {
-		showHelp()
-	}
-
-	packer := GetPackerForAlgorithm(algorithm)
-	if packer == nil {
-		fmt.Fprintf(os.Stderr, "Unrecognized packing algorithm: %s\n", algorithm)
-		os.Exit(2)
-	}
-
-	params := &GenerateParams{
-		Name: name,
-		// Descriptor
-		Packer:     packer,
-		Sorter:     GetSorterFromString(sorter),
-		MaxWidth:   maxWidth,
-		MaxHeight:  maxHeight,
-		MaxAtlases: maxAtlases,
-		Padding:    padding,
-		Gutter:     gutter,
-	}
-	_, err := Generate(inFiles, outDir, params)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Texture packing failed with error: %s\n", err.Error())
-		os.Exit(2)
-	}
-}
 
 // Includes parameters that can be passed to the Generate function
 type GenerateParams struct {

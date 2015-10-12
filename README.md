@@ -10,15 +10,8 @@ Texture packer written in Go.
 * Add gutter to the images to prevent join lines between sprites
 * Generate descriptor files in a range of formats (Currently only Kiwi.js supported)
 * Specify assets that must be grouped together to ensure maximum runtime performance (TODO)
-* Use as a command line tool or Go dependancy
 
 ### Example Usage
-
-Command line
-```
-# usage: %s [-params] <infiles> <outdir>
-go-atlas ./assets/*.png ./assets/spritesheets
-```
 
 Basic example
 ```
