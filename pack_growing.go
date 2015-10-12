@@ -1,4 +1,4 @@
-package main
+package atlas
 
 type node struct {
 	x, y, w, h  int

@@ -1,4 +1,4 @@
-package main
+package atlas
 
 // Represents a File to be outputted
 type File struct {
